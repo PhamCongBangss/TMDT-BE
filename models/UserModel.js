@@ -58,6 +58,15 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+
+    otpReset: {
+      code: String,
+      expiresAt: Date,
+      attemptCount: {
+        type: Number,
+        default: 0,
+      },
+    },
   },
 
   {

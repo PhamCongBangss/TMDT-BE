@@ -6,7 +6,7 @@ const tempUserSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      require: [true, "Tên đăng nhập không được trống"],
+      required: [true, "Tên đăng nhập không được trống"],
       trim: true,
     },
 
