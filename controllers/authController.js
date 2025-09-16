@@ -81,6 +81,8 @@ exports.verifyOtp = catchAsync(async (req, res, next) => {
     password: tempUser.password,
   });
 
+  console.log(user);
+
   await TempUser.deleteOne({ _id: tempUser._id });
 
   createSendToken(user, "Đăng ký tài khoản thành công", 200, res);
@@ -94,14 +96,15 @@ exports.login = catchAsync(async (req, res, next) => {
   }
 
   const user = await User.findOne({ username }).select("+password");
+
   if (!user) {
-    return next(new AppError("Email hoặc mật khẩu không đúng", 401));
+    return next(new AppError("Tên đăng nhập hoặc mật khẩu không đúng", 401));
   }
 
   const isMatch = await bcrypt.compare(password, user.password);
 
   if (!isMatch) {
-    return next(new AppError("Email hoặc mật khẩu không đúngs", 401));
+    return next(new AppError("Tên đăng nhập hoặc mật khẩu không đúng", 401));
   }
 
   createSendToken(user, "Đăng nhập thành công", 200, res);
@@ -146,7 +149,6 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
 
 exports.resendOtpForgotPassword = catchAsync(async (req, res, next) => {
   const { email } = req.body;
-  console.log(email);
 
   const user = await User.findOne({ email });
 
@@ -233,14 +235,12 @@ exports.verifyForgotPassword = catchAsync(async (req, res, next) => {
 
 exports.verifyResetTokenCookie = catchAsync(async (req, res, next) => {
   const token = req.cookies.resetToken;
-  console.log(token);
 
   if (!token) return next(new AppError("Không có quyền đổi mật khẩu", 401));
 
   const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  console.log(decoded);
 
-  req.email = decoded.email;
+  req.email = decoded.id;
 
   next();
 });
@@ -249,10 +249,13 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   const { newPassword } = req.body;
   const { email } = req;
 
-  console.log(newPassword);
+  const user = await User.findOne({ email });
 
-  const hashedPassword = await bcrypt.hash(newPassword, 12);
-  await User.findOneAndUpdate({ email }, { password: hashedPassword });
+  if (!user) return next(new AppError("Người dùng không tồn tại", 404));
+
+  user.password = newPassword;
+  await user.save();
+
   res.clearCookie("resetToken");
 
   res.json({ message: "Đổi mật khẩu thành công" });

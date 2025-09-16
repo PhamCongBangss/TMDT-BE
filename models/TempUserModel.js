@@ -55,12 +55,12 @@ const tempUserSchema = new mongoose.Schema(
   }
 );
 
-tempUserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 12);
-  this.passwordConfirm = undefined;
-  next();
-});
+// tempUserSchema.pre("save", async function (next) {
+//   if (!this.isModified("password")) return next();
+//   this.password = await bcrypt.hash(this.password, 12);
+//   this.passwordConfirm = undefined;
+//   next();
+// });
 
 const TempUser = mongoose.model("TempUser", tempUserSchema);
 module.exports = TempUser;

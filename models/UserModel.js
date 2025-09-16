@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcrypt");
 
 const userSchema = new mongoose.Schema(
   {
@@ -20,7 +21,7 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      require: [true, "Mật khẩu không được trống"],
+      required: [true, "Mật khẩu không được trống"],
       minlength: [8, "Mật khẩu phải có ít nhất 8 ký tự"],
       match: [
         /^(?=.*[0-9])(?=.*[!@#$%^&*(),.?":{}|<>])/,
@@ -73,6 +74,12 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+userSchema.pre("save", async function (next) {
+  if (!this.isModified("password") || this.skipHash) return next();
+  this.password = await bcrypt.hash(this.password, 12);
+  next();
+});
 
 const User = mongoose.model("User", userSchema);
 module.exports = User;
