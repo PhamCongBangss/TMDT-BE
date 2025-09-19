@@ -30,7 +30,15 @@ const userSchema = new mongoose.Schema(
       select: false,
     },
 
+    fullname: {
+      type: String,
+    },
+
     phone: {
+      type: String,
+    },
+
+    avatar: {
       type: String,
     },
 

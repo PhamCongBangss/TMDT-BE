@@ -1,5 +1,7 @@
 const express = require("express");
 const authController = require("../controllers/authController");
+const userController = require("../controllers/userController");
+const uploadAvatar = require("../middlewares/uploadAvatar");
 
 const router = express.Router();
 
@@ -24,13 +26,13 @@ router.post(
   authController.resetPassword
 );
 
-router.get("/me", authController.protect, (req, res) => {
-  res.status(200).json({
-    status: "success",
-    data: {
-      user: req.user,
-    },
-  });
-});
+router
+  .route("/me")
+  .get(authController.protect, userController.getMe)
+  .patch(
+    authController.protect,
+    uploadAvatar.single("avatar"),
+    userController.updateMe
+  );
 
 module.exports = router;
