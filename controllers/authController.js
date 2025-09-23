@@ -261,6 +261,55 @@ exports.resetPassword = catchAsync(async (req, res, next) => {
   res.json({ message: "Đổi mật khẩu thành công" });
 });
 
+exports.logout = catchAsync(async (req, res, next) => {
+  res.clearCookie("jwt", {
+    httpOnly: true,
+    secure: false,
+    sameSite: "Lax",
+  });
+
+  res.status(200).json({
+    status: "success",
+    message: "Đăng xuất thành công",
+  });
+});
+
+exports.confirmChangePassword = catchAsync(async (req, res, next) => {
+  const { currentPassword } = req.body;
+
+  const user = await User.findById(req.user.id).select("+password");
+  if (!user) {
+    return next(new AppError("Người dùng không tồn tại", 404));
+  }
+
+  const isMatch = await bcrypt.compare(currentPassword, user.password);
+  if (!isMatch) {
+    return next(new AppError("Mật khẩu hiện tại không đúng", 401));
+  }
+
+  res.status(200).json({
+    status: "success",
+    valid: true,
+  });
+});
+
+exports.changePassword = catchAsync(async (req, res, next) => {
+  const { newPassword } = req.body;
+
+  const user = await User.findById(req.user.id).select("+password");
+  if (!user) {
+    return next(new AppError("Người dùng không tồn tại", 404));
+  }
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(200).json({
+    status: "success",
+    message: "Đổi mật khẩu thành công",
+  });
+});
+
 exports.protect = catchAsync(async (req, res, next) => {
   let token;
 

@@ -7,6 +7,7 @@ const router = express.Router();
 
 router.get("/", authController.getAllUsers);
 
+router.post("/logout", authController.logout);
 router.post("/signup", authController.signup);
 router.post("/verify-otp", authController.verifyOtp);
 router.post("/resend-otp", authController.resendOtp);
@@ -34,5 +35,29 @@ router
     uploadAvatar.single("avatar"),
     userController.updateMe
   );
+
+router
+  .route("/me/address")
+  .get(authController.protect, userController.getAddresses)
+  .post(authController.protect, userController.addAddress);
+
+router.patch(
+  "/me/address/:id/default",
+  authController.protect,
+  userController.setAddressDefault
+);
+
+router
+  .route("/me/address/:id")
+  .patch(authController.protect, userController.updateAddress)
+  .delete(authController.protect, userController.deleteAddress);
+
+router
+  .route("/me/confirm-change-password")
+  .post(authController.protect, authController.confirmChangePassword);
+
+router
+  .route("/me/change-password")
+  .post(authController.protect, authController.changePassword);
 
 module.exports = router;

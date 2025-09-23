@@ -40,11 +40,19 @@ const userSchema = new mongoose.Schema(
 
     avatar: {
       type: String,
+      default: "default.jpg",
     },
 
-    address: {
-      type: String,
-    },
+    address: [
+      {
+        name: String,
+        phone: String,
+        province: String,
+        district: String,
+        ward: String,
+        detail: String,
+      },
+    ],
 
     balance: {
       type: Number,
