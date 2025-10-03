@@ -338,3 +338,14 @@ exports.protect = catchAsync(async (req, res, next) => {
   req.user = currentUser;
   next();
 });
+
+exports.restrictTo = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new AppError("Bạn không có quyền truy cập tài nguyên này", 403)
+      );
+    }
+    next();
+  };
+};

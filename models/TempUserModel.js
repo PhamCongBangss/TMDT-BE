@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const bcrypt = require("bcrypt");
 const validator = require("validator");
 
 const tempUserSchema = new mongoose.Schema(
@@ -54,13 +53,6 @@ const tempUserSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-
-// tempUserSchema.pre("save", async function (next) {
-//   if (!this.isModified("password")) return next();
-//   this.password = await bcrypt.hash(this.password, 12);
-//   this.passwordConfirm = undefined;
-//   next();
-// });
 
 const TempUser = mongoose.model("TempUser", tempUserSchema);
 module.exports = TempUser;

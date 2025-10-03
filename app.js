@@ -1,5 +1,7 @@
 const express = require("express");
 const userRouter = require("./routes/userRoutes");
+const reviewRouter = require("./routes/reviewRoutes");
+const storeRouter = require("./routes/StoreRoutes");
 const cors = require("cors");
 const globalErrorHandle = require("./controllers/errorController");
 const cookieParser = require("cookie-parser");
@@ -20,6 +22,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/users", userRouter);
+app.use("/api/reviews", reviewRouter);
+app.use("/api/stores", storeRouter);
 
 app.use(
   "/img/avatars",
