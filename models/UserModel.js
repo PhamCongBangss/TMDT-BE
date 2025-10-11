@@ -43,18 +43,7 @@ const userSchema = new mongoose.Schema(
       default: "default.jpg",
     },
 
-    address: [
-      {
-        name: String,
-        phone: String,
-        province: String,
-        district: String,
-        ward: String,
-        detail: String,
-      },
-    ],
-
-    balance: {
+    totalPayment: {
       type: Number,
       default: 0,
     },
@@ -68,7 +57,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["user", "seller", "shipper", "admin"],
-      default: "user",
+      default: "seller",
     },
 
     isActive: {

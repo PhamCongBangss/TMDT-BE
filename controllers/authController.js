@@ -42,6 +42,8 @@ exports.signup = catchAsync(async (req, res, next) => {
 
   const otp = crypto.randomInt(100000, 999999).toString();
 
+  console.log(otp);
+
   await TempUser.create({
     username,
     email,

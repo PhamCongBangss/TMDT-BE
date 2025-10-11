@@ -4,14 +4,14 @@ const reviewSchema = new mongoose.Schema(
   {
     review: {
       type: String,
-      required: [true, "Review can not be empty"],
+      required: true,
     },
 
     rating: {
       type: Number,
       min: 1,
       max: 5,
-      required: [true, "Review must be a rating"],
+      required: true,
     },
 
     images: [

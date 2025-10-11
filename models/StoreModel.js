@@ -7,7 +7,10 @@ const storeSchema = new mongoose.Schema(
       ref: "User",
     },
 
-    address: { type: String, required: true },
+    province: String,
+    district: String,
+    ward: String,
+    detail: String,
 
     name: { type: String, required: true },
 
@@ -22,8 +25,9 @@ const storeSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ["Pending", "Approval", "Reject"],
-      default: "Pending",
+      default: "Approval",
     },
+
     SKU_code: {
       type: String,
       required: true,
@@ -35,6 +39,6 @@ const storeSchema = new mongoose.Schema(
   }
 );
 
-const StoreModel = mongoose.model("Store", storeSchema);
+const Store = mongoose.models.Store || mongoose.model("Store", storeSchema);
 
-module.exports = StoreModel;
+module.exports = Store;
