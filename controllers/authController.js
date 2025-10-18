@@ -140,9 +140,46 @@ exports.resendOtp = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
+  let { search, role, isActive, page = 1, limit = 10 } = req.query;
+
+  page = parseInt(page);
+  limit = parseInt(limit);
+
+  const filter = {};
+
+  // 🔍 Tìm theo tên hoặc email
+  if (search) {
+    filter.$or = [
+      { username: { $regex: search, $options: "i" } },
+      { email: { $regex: search, $options: "i" } },
+    ];
+  }
+
+  // 🎭 Lọc theo vai trò
+  if (role) filter.role = role;
+
+  // ⚙️ Lọc theo trạng thái hoạt động
+  if (isActive === "true") filter.isActive = true;
+  if (isActive === "false") filter.isActive = false;
+
+  // 🧮 Tổng số user (trước phân trang)
+  const totalUsers = await User.countDocuments(filter);
+
+  // ⚡ Truy vấn có phân trang
+  const users = await User.find(filter)
+    .sort({ createdAt: -1 }) // mới nhất trước
+    .skip((page - 1) * limit)
+    .limit(limit);
+
   res.status(200).json({
     status: "success",
+    results: users.length,
+    pagination: {
+      totalUsers,
+      totalPages: Math.ceil(totalUsers / limit),
+      currentPage: page,
+      limit,
+    },
     data: {
       users,
     },

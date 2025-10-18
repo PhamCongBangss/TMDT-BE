@@ -4,6 +4,10 @@ const AppError = require("../utils/appError");
 const Address = require("../models/AddressModel");
 
 exports.getMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, {
+    lastActivity: new Date(),
+  });
+
   const user = await User.findById(req.user.id).select("-password");
 
   res.status(200).json({
@@ -17,12 +21,13 @@ exports.getMe = catchAsync(async (req, res, next) => {
 exports.updateMe = catchAsync(async (req, res, next) => {
   const allowedFields = ["fullname", "phone"];
   const updateData = {};
+
   allowedFields.forEach((field) => {
     if (req.body[field]) updateData[field] = req.body[field];
   });
 
   if (req.file) {
-    updateData.avatar = req.file.filename;
+    updateData.avatar = req.file.path;
   }
 
   const updatedUser = await User.findByIdAndUpdate(req.user.id, updateData, {
@@ -130,5 +135,29 @@ exports.updateAddress = catchAsync(async (req, res, next) => {
   res.status(200).json({
     status: "success",
     data: { address },
+  });
+});
+
+// Khóa/Mở khóa tài khoản
+exports.updateUserStatus = catchAsync(async (req, res, next) => {
+  const { isActive, userId } = req.body;
+
+  if (typeof isActive !== "boolean") {
+    return next(new AppError("isActive phải là boolean", 400));
+  }
+
+  const user = await User.findByIdAndUpdate(
+    userId,
+    { isActive },
+    { new: true, runValidators: true }
+  ).select("-password");
+
+  if (!user) {
+    return next(new AppError("Không tìm thấy người dùng", 404));
+  }
+
+  res.status(200).json({
+    status: "success",
+    data: { user },
   });
 });

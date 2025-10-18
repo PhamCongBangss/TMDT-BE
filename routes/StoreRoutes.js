@@ -8,9 +8,32 @@ const router = express.Router();
 router.post(
   "/",
   authController.protect,
-  authController.restrictTo("user"),
+  // authController.restrictTo("user"),
   uploadCitizen,
   storeController.createStore
+);
+
+// Lấy danh sách cửa hàng pending
+router.get(
+  "/pending",
+  authController.protect,
+
+  storeController.getPendingStores
+);
+
+// Duyệt cửa hàng
+router.patch(
+  "/:id/approve",
+  authController.protect,
+  storeController.approveStore
+);
+
+// Từ chối cửa hàng
+router.patch(
+  "/:id/reject",
+  authController.protect,
+
+  storeController.rejectStore
 );
 
 module.exports = router;

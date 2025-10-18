@@ -57,7 +57,7 @@ const userSchema = new mongoose.Schema(
     role: {
       type: String,
       enum: ["user", "seller", "shipper", "admin"],
-      default: "seller",
+      default: "user",
     },
 
     isActive: {
@@ -72,6 +72,11 @@ const userSchema = new mongoose.Schema(
         type: Number,
         default: 0,
       },
+    },
+
+    lastActivity: {
+      type: Date,
+      default: null,
     },
   },
 

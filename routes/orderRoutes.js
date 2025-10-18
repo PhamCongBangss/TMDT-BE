@@ -1,12 +1,11 @@
 const express = require("express");
-const orderController = require("../controllers/orderController");
 const authController = require("../controllers/authController");
+const OrderController = require("../controllers/orderController");
 
-const router = express.Router();
+const route = express.Router();
 
-router.post("/", authController.protect, orderController.createOrder);
+route.post("/", authController.protect, OrderController.createOrder);
+// route.post("/cancel", authController.protect, OrderController.cancelOrder);
+route.get("/", OrderController.getOrders);
 
-// Nếu cần thêm các route khác, ví dụ lấy đơn hàng của user
-// router.get("/me", protect, orderController.getMyOrders);
-
-module.exports = router;
+module.exports = route;

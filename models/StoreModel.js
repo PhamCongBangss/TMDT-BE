@@ -6,32 +6,23 @@ const storeSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
-
-    province: String,
-    district: String,
-    ward: String,
-    detail: String,
-
+    address: { type: String, required: true },
     name: { type: String, required: true },
-
-    phone: { type: String, required: true },
-
-    citizenCode: { type: String, required: true },
-
-    citizenImageFront: { type: String, required: true },
-
-    citizenImageBack: { type: String, required: true },
-
+    phone: String,
     status: {
       type: String,
-      enum: ["Pending", "Approval", "Reject"],
-      default: "Approval",
+      enum: ["pending", "approved", "reject"],
+      default: "pending",
     },
+    citizenCode: { type: String, required: true },
+    citizenImageFront: { type: String, required: true },
+    citizenImageBack: { type: String, required: true },
 
-    SKU_code: {
-      type: String,
-      required: true,
-      unique: true,
+    lat: {
+      type: Number,
+    },
+    lng: {
+      type: Number,
     },
   },
   {
@@ -39,6 +30,6 @@ const storeSchema = new mongoose.Schema(
   }
 );
 
-const Store = mongoose.models.Store || mongoose.model("Store", storeSchema);
+const StoreModel = mongoose.model("Store", storeSchema);
 
-module.exports = Store;
+module.exports = StoreModel;

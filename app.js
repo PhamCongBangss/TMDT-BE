@@ -11,6 +11,10 @@ const globalErrorHandle = require("./controllers/errorController");
 const cookieParser = require("cookie-parser");
 const path = require("path");
 const AppError = require("./utils/appError");
+const upload = require("./middlewares/upload");
+const authController = require("./controllers/authController");
+const productController = require("./controllers/productController");
+const tagController = require("./controllers/tagController");
 
 const app = express();
 
@@ -32,6 +36,14 @@ app.use("/api/stores", storeRouter);
 app.use("/api/carts", cartRouter);
 app.use("/api/notifications", notificationRouter);
 app.use("/api/orders", orderRouter);
+app.use(
+  "/api/createProduct",
+  authController.protect,
+  upload.array("variantImages"),
+  productController.createNewProduct
+);
+
+app.get("/api/alltags", tagController.getAll);
 
 app.get("/api/geocode", async (req, res) => {
   try {

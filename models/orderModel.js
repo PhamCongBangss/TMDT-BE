@@ -1,37 +1,28 @@
-// models/Order.js
 const mongoose = require("mongoose");
 
-const orderItemSchema = new mongoose.Schema({
-  productId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
-    required: true,
-  }, // đổi từ Number sang ObjectId
-  name: { type: String, required: true },
-  store: { type: String, required: true },
-  price: { type: Number, required: true },
-  quantity: { type: Number, required: true },
-  size: { type: String },
-  color: { type: String },
-});
-
-const orderSchema = new mongoose.Schema({
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  name: { type: String, required: true },
-  phone: { type: String, required: true },
-  address: { type: String, required: true },
-  items: [orderItemSchema],
-  shippingFee: { type: Number, required: true },
-  totalPrice: { type: Number, required: true },
-  paymentMethod: {
-    type: String,
-    required: true,
-    enum: ["cod", "momo", "bank"],
+const OrderSchema = new mongoose.Schema(
+  {
+    contact: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Address",
+    },
+    total_amount: {
+      type: Number,
+      required: true,
+    },
+    final_amount: {
+      type: Number,
+      required: true,
+    },
+    promotion: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Promotion",
+    },
+    shippingFee: { type: Number },
   },
-  note: { type: String, default: "" },
-  createdAt: { type: Date, default: Date.now },
-});
+  { timestamps: true }
+);
 
-const Order = mongoose.model("Order", orderSchema);
+const OrderModel = mongoose.model("Order", OrderSchema);
 
-module.exports = Order;
+module.exports = OrderModel;
