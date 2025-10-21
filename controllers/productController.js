@@ -309,6 +309,7 @@ const productController = {
   getByStore: async (req, res) => {
     try {
       const { storeId } = req.params;
+      console.log(storeId);
       const curPage = parseInt(req.query.curPage) || 1;
 
       const itemQuantity = await ProductModel.countDocuments({

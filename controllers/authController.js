@@ -140,7 +140,7 @@ exports.resendOtp = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  let { search, role, isActive, page = 1, limit = 10 } = req.query;
+  let { search, role, isActive, page = 1, limit = 5 } = req.query;
 
   page = parseInt(page);
   limit = parseInt(limit);
@@ -166,10 +166,9 @@ exports.getAllUsers = catchAsync(async (req, res, next) => {
   const totalUsers = await User.countDocuments(filter);
 
   // ⚡ Truy vấn có phân trang
-  const users = await User.find(filter)
-    .sort({ createdAt: -1 }) // mới nhất trước
-    .skip((page - 1) * limit)
-    .limit(limit);
+  const users = await User.find(filter).sort({ createdAt: -1 }); // mới nhất trước
+  // .skip((page - 1) * limit)
+  // .limit(limit);
 
   res.status(200).json({
     status: "success",

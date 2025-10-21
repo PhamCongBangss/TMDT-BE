@@ -30,4 +30,6 @@ router.get("/search", productController.searchByName);
 
 router.get("/:id", productController.getOneProduct);
 
+router.get("/get-by-store/:storeId", productController.getByStore);
+
 module.exports = router;

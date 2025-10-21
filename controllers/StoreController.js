@@ -29,8 +29,17 @@ exports.createStore = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.getStores = catchAsync(async (req, res, next) => {
+  const stores = await Store.find().populate("user").sort({ createdAt: -1 });
+  res.status(200).json({
+    status: "success",
+    results: stores.length,
+    data: stores,
+  });
+});
+
 exports.getPendingStores = catchAsync(async (req, res, next) => {
-  const pendingStores = await Store.find({ status: "Pending" })
+  const pendingStores = await Store.find({ status: "pending" })
     .populate("user", "username email")
     .sort({ createdAt: -1 });
 
@@ -47,6 +56,9 @@ exports.approveStore = catchAsync(async (req, res, next) => {
     { status: "approved" },
     { new: true }
   );
+
+  await User.findByIdAndUpdate(store.user, { role: "seller" });
+
   if (!store) return next(new AppError("Store not found", 404));
 
   res.status(200).json({ status: "success", data: store });

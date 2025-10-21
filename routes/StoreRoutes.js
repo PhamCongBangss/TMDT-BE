@@ -13,11 +13,12 @@ router.post(
   storeController.createStore
 );
 
+router.get("/", authController.protect, storeController.getStores);
+
 // Lấy danh sách cửa hàng pending
 router.get(
   "/pending",
   authController.protect,
-
   storeController.getPendingStores
 );
 
