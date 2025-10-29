@@ -202,6 +202,35 @@ const productController = {
     }
   },
 
+  getAllAdmin: async (req, res) => {
+    try {
+      const curPage = parseInt(req.query.curPage) || 1;
+      const name = req.query.name || "";
+      const query = {};
+
+      if (name) query.name = { $regex: name, $options: "i" };
+      // query.status = "Đang bán";
+
+      const itemQuantity = await ProductModel.countDocuments(query);
+      const numberOfPages = Math.ceil(itemQuantity / 20);
+
+      if (curPage > numberOfPages && numberOfPages > 0) {
+        return res.status(400).send({ message: "Invalid page number" });
+      }
+
+      const data = await ProductModel.aggregate([
+        { $match: query },
+        ...commonLookups,
+        { $skip: (curPage - 1) * 20 },
+        { $limit: 20 },
+      ]);
+
+      res.status(200).send({ message: "Success", data, numberOfPages });
+    } catch (error) {
+      res.status(500).send({ message: "Error", error: error.message });
+    }
+  },
+
   getOneProduct: async (req, res) => {
     try {
       const { id } = req.params;
@@ -330,6 +359,41 @@ const productController = {
       ]);
 
       res.status(200).send({ message: "Success", data, numberOfPages });
+    } catch (error) {
+      res.status(500).send({ message: "Error", error: error.message });
+    }
+  },
+
+  changeProductStatus: async (req, res) => {
+    try {
+      const { id } = req.body;
+      const { status } = req.body;
+      console.log(id, status);
+      const product = await ProductModel.findById(id);
+      if (!product) {
+        return res.status(404).send({ message: "Not Found" });
+      }
+      const variants = await ProductVariantsModel.find({ product_id: id });
+      if (status === "Ngừng bán") {
+        await Promise.all(
+          variants.map(async (variant) => {
+            variant.onDeploy = false;
+            await variant.save();
+          })
+        );
+      } else if (status === "Đang bán") {
+        await Promise.all(
+          variants.map(async (variant) => {
+            if (variant.quantity > 0) {
+              variant.onDeploy = true;
+            }
+            await variant.save();
+          })
+        );
+      }
+      product.status = status;
+      await product.save();
+      res.status(200).send({ message: "Success", data: product });
     } catch (error) {
       res.status(500).send({ message: "Error", error: error.message });
     }

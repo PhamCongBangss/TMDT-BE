@@ -20,7 +20,7 @@ const express = require("express");
 const router = express.Router();
 const productController = require("../controllers/productController");
 
-router.get("/", productController.getAll);
+router.get("/", productController.getAllAdmin);
 
 router.get("/most-favourite", productController.getMostFavourite);
 
@@ -31,5 +31,7 @@ router.get("/search", productController.searchByName);
 router.get("/:id", productController.getOneProduct);
 
 router.get("/get-by-store/:storeId", productController.getByStore);
+
+router.patch("/change-product-status", productController.changeProductStatus);
 
 module.exports = router;
