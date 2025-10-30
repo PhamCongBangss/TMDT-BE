@@ -33,7 +33,7 @@ app.use("/api/users", userRouter);
 app.use("/api/reviews", reviewRouter);
 app.use("/api/products", productRouter);
 app.use("/api/stores", storeRouter);
-app.use("/api/carts", cartRouter);
+app.use("/api/cart", cartRouter);
 app.use("/api/notifications", notificationRouter);
 app.use("/api/orders", orderRouter);
 app.use(

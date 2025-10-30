@@ -9,8 +9,6 @@ exports.createStore = catchAsync(async (req, res, next) => {
   }
 
   const address = `${req.body.detail}, ${req.body.ward}, ${req.body.district}, ${req.body.province}`;
-  console.log(address);
-  console.log(req.body);
 
   const store = await Store.create({
     user: req.user._id,
@@ -57,9 +55,14 @@ exports.approveStore = catchAsync(async (req, res, next) => {
     { new: true }
   );
 
-  await User.findByIdAndUpdate(store.user, { role: "seller" });
-
   if (!store) return next(new AppError("Store not found", 404));
+
+  const userId = store.user?._id || store.user;
+  if (userId) {
+    await User.findByIdAndUpdate(userId, { role: "seller" });
+  } else {
+    console.warn("⚠️ Store does not have a user field!");
+  }
 
   res.status(200).json({ status: "success", data: store });
 });

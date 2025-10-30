@@ -1,25 +1,45 @@
 const mongoose = require("mongoose");
+const { applyPromotionsToItems } = require("../utils/calculateCart");
 
-const CartItemSchema = new mongoose.Schema({
-  product: {
+const cartSchema = new mongoose.Schema({
+  user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
+    ref: "User",
     required: true,
   },
-  color: { type: String, required: true },
-  size: { type: String, required: true },
-  quantity: { type: Number, required: true, default: 1 },
-  price: { type: Number, required: true },
-  image: { type: String },
+  shippingFee: {
+    type: Number,
+    default: 0,
+  },
+  subTotal: {
+    type: Number,
+    default: 0,
+  },
+  promotion: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Promotion",
+  },
+  promotionExpiresAt: {
+    type: Date, // lưu thời điểm hết hạn khuyến mãi
+    default: null,
+  },
+  finalTotal: {
+    type: Number,
+    default: 0,
+  },
 });
 
-const CartSchema = new mongoose.Schema(
-  {
-    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    items: [CartItemSchema],
-    selected: { type: Boolean, default: true },
-  },
-  { timestamps: true }
-);
+cartSchema.pre("save", async function (next) {
+  if (this.isModified("promotion")) {
+    if (this.promotion) {
+      this.promotionExpiresAt = new Date(Date.now() + 5 * 60 * 1000);
+    } else {
+      this.promotionExpiresAt = null;
+    }
+    await applyPromotionsToItems(this._id);
+  }
+  next();
+});
 
-module.exports = mongoose.model("Cart", CartSchema);
+const CartModel = mongoose.model("Cart", cartSchema);
+module.exports = CartModel;

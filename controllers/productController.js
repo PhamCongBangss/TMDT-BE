@@ -234,6 +234,7 @@ const productController = {
   getOneProduct: async (req, res) => {
     try {
       const { id } = req.params;
+      console.log(id);
       const data = await ProductModel.aggregate([
         {
           $match: { _id: new mongoose.Types.ObjectId(id), status: "Đang bán" },

@@ -5,9 +5,10 @@ const reviewController = require("../controllers/reviewController");
 
 const router = express.Router();
 
+router.route("/:productId").get(reviewController.getReviewsByProduct);
+
 router
   .route("/")
-  .get(reviewController.getReviews)
   .post(
     authController.protect,
     uploadReviews.array("images", 5),
